@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Chill Galaxy — Pro Player</title>
+<link rel="icon" href="data:," />
+<style>
+  :root{
+    --bg:#07060a;
+    --accent:#6a11cb;
+    --accent2:#2575fc;
+    --glass: rgba(255,255,255,0.06);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;padding:0;
+    background:var(--bg);
+    color:#fff;
+    font-family:Inter, "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
+    -webkit-font-smoothing:antialiased;
+    display:flex;flex-direction:column;align-items:center;
+  }
+
+  /* Background */
+  .stars{position:fixed;inset:0;background:url('https://www.transparenttextures.com/patterns/stardust.png') repeat;z-index:-3;animation:moveStars 220s linear infinite;opacity:.9}
+  @keyframes moveStars{from{background-position:0 0}to{background-position:-9000px 4000px}}
+  .nebula{position:fixed;inset:0;z-index:-2;filter:blur(90px);
+    background:
+      radial-gradient(circle at 20% 30%, rgba(106,17,203,0.35), transparent 55%),
+      radial-gradient(circle at 80% 70%, rgba(37,117,252,0.28), transparent 55%),
+      radial-gradient(circle at 50% 50%, rgba(255,80,120,0.12), transparent 60%);
+    animation:neb 40s ease-in-out infinite alternate;opacity:.95}
+  @keyframes neb{from{transform:scale(1)}to{transform:scale(1.12) translate(-20px,20px)}}
+
+  header{width:100%;max-width:1100px;padding:36px 20px 6px;display:flex;align-items:center;gap:20px;z-index:5}
+  .logo{display:flex;flex-direction:column}
+  .logo h1{font-size:1.6rem;margin:0;letter-spacing:0.6px;text-shadow:0 0 14px rgba(106,17,203,0.9),0 0 30px rgba(37,117,252,0.5)}
+  .logo p{margin:6px 0 0;color:#cfcfcf;font-size:.95rem}
+
+  main{width:100%;max-width:1100px;padding:18px;display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start;}
+
+  /* left: playlist */
+  .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:14px;backdrop-filter: blur(8px);box-shadow:0 6px 30px rgba(0,0,0,0.6)}
+  .playlist-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .cover{width:72px;height:72px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700}
+  .meta{flex:1}
+  .meta h3{margin:0;font-size:1.05rem}
+  .meta p{margin:4px 0 0;color:#ccc;font-size:.88rem}
+
+  .file-row{display:flex;gap:8px;align-items:center;margin-top:10px}
+  .btn{padding:8px 12px;border-radius:999px;border:none;background:var(--accent);color:white;cursor:pointer;font-weight:600;box-shadow:0 8px 26px rgba(106,17,203,0.18)}
+  .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+  .file-input{display:none}
+
+  .playlist{margin-top:12px;max-height:56vh;overflow:auto;padding-right:6px}
+  .track{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;margin-bottom:8px;cursor:pointer;background:transparent;transition:all .18s}
+  .track:hover{transform:translateY(-4px);background:rgba(255,255,255,0.02)}
+  .track.active{background:linear-gradient(90deg, rgba(106,17,203,0.16), rgba(37,117,252,0.08));box-shadow:0 8px 24px rgba(37,117,252,0.06)}
+  .track .t-index{width:34px;text-align:center;color:#d8d8d8}
+  .track .t-info{flex:1}
+  .track .t-info .t-title{font-weight:600}
+  .track .t-info .t-sub{font-size:.85rem;color:#cfcfcf;opacity:.85;margin-top:4px}
+
+  /* right: player big */
+  .player-wrap{display:flex;flex-direction:column;gap:14px}
+  .player-card{display:flex;gap:16px;align-items:center;padding:18px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 10px 40px rgba(0,0,0,0.6)}
+  .player-cover{width:140px;height:140px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700}
+  .player-meta{flex:1}
+  .player-meta h2{margin:0;font-size:1.25rem}
+  .player-meta p{margin:6px 0 0;color:#d0d0d0}
+
+  /* controls */
+  .controls{display:flex;flex-direction:column;gap:12px;align-items:center}
+  .big-controls{display:flex;gap:18px;align-items:center}
+  .icon-btn{width:56px;height:56px;border-radius:999px;border:none;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center;font-size:1.25rem;cursor:pointer;box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+  .icon-btn.play{width:72px;height:72px;font-size:1.35rem;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+
+  /* progress */
+  .progress-row{width:100%;display:flex;align-items:center;gap:10px}
+  .time{font-size:.85rem;color:#cfcfcf;width:48px;text-align:center}
+  input[type="range"].progress{flex:1;appearance:none;height:8px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:8px}
+  input[type="range"].progress::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.4)}
+
+  .row-bottom{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-top:8px}
+  .volume{display:flex;align-items:center;gap:8px}
+
+  /* visualizer */
+  canvas.visual{width:100%;height:70px;border-radius:10px;display:block;background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));}
+
+  footer{width:100%;max-width:1100px;padding:18px;color:#bbb;font-size:.9rem;text-align:center;opacity:.95}
+
+  /* responsive */
+  @media (max-width:980px){
+    main{grid-template-columns:1fr; padding:12px}
+    .player-cover{width:112px;height:112px}
+  }
+</style>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <div class="nebula" aria-hidden="true"></div>
+
+  <header>
+    <div class="logo">
+      <h1>Galaxy Music</h1>
+      <p>Web phát nhạc chuyên nghiệp — Bấm Play để bắt đầu</p>
+    </div>
+  </header>
+
+  <main>
+    <!-- LEFT: Playlist -->
+    <div class="panel">
+      <div class="playlist-header">
+        <div class="cover" id="sideCover">CG</div>
+        <div class="meta">
+          <h3>Playlist Chill</h3>
+          <p>Nhấn vào bài để phát, hoặc chọn file MP3 từ máy (đề phòng CORS).</p>
+        </div>
+      </div>
+
+      <div class="file-row">
+        <label class="btn secondary" id="openLocal">Chọn MP3 Từ Máy Tính</label>
+        <input id="fileInput" class="file-input" type="file" accept="audio/*" />
+        <button id="loadDefault" class="btn">Dùng mặc định (nhac_chill.mp3)</button>
+      </div>
+
+      <div class="playlist" id="playlist"></div>
+    </div>
+
+    <!-- RIGHT: Player -->
+    <div class="player-wrap">
+      <div class="player-card">
+        <div class="player-cover" id="mainCover">CG</div>
+        <div class="player-meta">
+          <h2 id="title">Chưa có bài</h2>
+          <p id="artist">—</p>
+
+          <div class="controls">
+            <div class="big-controls">
+              <button id="prev" class="icon-btn">⏮️</button>
+              <button id="playPause" class="icon-btn play">▶️</button>
+              <button id="next" class="icon-btn">⏭️</button>
+            </div>
+
+            <div class="progress-row" aria-hidden="false">
+              <div class="time" id="currentTime">0:00</div>
+              <input type="range" class="progress" id="progress" min="0" max="100" value="0" />
+              <div class="time" id="duration">0:00</div>
+            </div>
+
+            <canvas id="vis" class="visual" aria-hidden="true"></canvas>
+
+            <div class="row-bottom">
+              <div class="volume">
+                <label style="font-size:.95rem;color:#ddd">Volume</label>
+                <input id="volume" type="range" min="0" max="1" step="0.01" value="0.55" />
+              </div>
+              <div style="color:#cfcfcf;font-size:.95rem" id="status">Sẵn sàng</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>Made with ❤️ by Nguyễn Hoàng Sang.
+</footer>
+
+<script>
+/* ========= Playlist (mặc định) =========
+  NOTE: remote MP3 có thể gặp CORS trên 1 số host.
+  Vì vậy: bạn có 3 tùy chọn:
+   - Đặt file `nhac_chill.mp3` cùng thư mục với file .html và bấm "Dùng mặc định"
+   - Hoặc bấm "Chọn MP3 từ máy" để upload file local (đề xuất)
+   - Hoặc dùng remote links nhưng có thể lỗi CORS
+*/
+const defaultLocal = 'nhac_chill.mp3';
+const tracks = [
+  { title: "Calm Ocean", artist:"Instrumental", src: defaultLocal, cover: "" },
+  { title: "Ambient Chill", artist:"Instrumental", src: defaultLocal, cover: "" },
+  { title: "Evening Lofi", artist:"Lofi", src: defaultLocal, cover: "" },
+  // you can replace the src values with remote URLs (but beware of CORS)
+];
+
+// UI elements
+const playlistEl = document.getElementById('playlist');
+const playPauseBtn = document.getElementById('playPause');
+const prevBtn = document.getElementById('prev');
+const nextBtn = document.getElementById('next');
+const titleEl = document.getElementById('title');
+const artistEl = document.getElementById('artist');
+const mainCover = document.getElementById('mainCover');
+const sideCover = document.getElementById('sideCover');
+const progress = document.getElementById('progress');
+const currentTimeEl = document.getElementById('currentTime');
+const durationEl = document.getElementById('duration');
+const volumeEl = document.getElementById('volume');
+const statusEl = document.getElementById('status');
+const visCanvas = document.getElementById('vis');
+
+const fileInput = document.getElementById('fileInput');
+const openLocal = document.getElementById('openLocal');
+const loadDefault = document.getElementById('loadDefault');
+
+let currentIndex = 0;
+let started = false;
+let isPlaying = false;
+
+// Use Audio object + WebAudio for visualizer
+const audio = new Audio();
+audio.crossOrigin = "anonymous";
+audio.loop = false;
+
+// WebAudio setup
+let audioCtx, analyser, sourceNode, dataArray;
+function ensureAudioContext(){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    const bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
+    sourceNode = audioCtx.createMediaElementSource(audio);
+    sourceNode.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    // resize canvas
+    visCanvas.width = visCanvas.clientWidth * devicePixelRatio;
+    visCanvas.height = visCanvas.clientHeight * devicePixelRatio;
+    requestAnimationFrame(drawVisualizer);
+  }
+}
+
+// Render playlist UI
+function renderPlaylist(){
+  playlistEl.innerHTML = "";
+  tracks.forEach((t, i) => {
+    const div = document.createElement('div');
+    div.className = 'track' + (i===currentIndex ? ' active' : '');
+    div.innerHTML = `<div class="t-index">${i+1}</div>
+                     <div class="t-info"><div class="t-title">${t.title}</div><div class="t-sub">${t.artist}</div></div>`;
+    div.addEventListener('click', () => {
+      currentIndex = i;
+      loadTrack(currentIndex, true);
+    });
+    playlistEl.appendChild(div);
+  });
+}
+renderPlaylist();
+
+// Load track (do not auto-play unless user already started)
+function loadTrack(i, autoPlay=false){
+  const t = tracks[i];
+  audio.src = t.src;
+  titleEl.textContent = t.title;
+  artistEl.textContent = t.artist || '—';
+  mainCover.textContent = t.title.split(' ').slice(0,2).map(s=>s[0]).join('').toUpperCase();
+  sideCover.textContent = mainCover.textContent;
+  updateActive();
+  statusEl.textContent = 'Đã chọn: ' + t.title;
+  if(started && autoPlay) playAudio();
+}
+
+// Update active in playlist
+function updateActive(){
+  document.querySelectorAll('.track').forEach((el, idx) => {
+    el.classList.toggle('active', idx === currentIndex);
+  });
+}
+
+// Play / Pause logic
+async function playAudio(){
+  try{
+    if(audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+    await audio.play();
+    started = true;
+    isPlaying = true;
+    playPauseBtn.textContent = '⏸️';
+    statusEl.textContent = 'Đang phát: ' + tracks[currentIndex].title;
+    ensureAudioContext();
+  }catch(err){
+    console.error('Play failed', err);
+    statusEl.textContent = 'Không phát được (chọn file local nếu cần)';
+    alert('Không phát được nhạc mặc định — vui lòng chọn file MP3 từ máy (bấm "Chọn MP3 từ máy") hoặc đặt file nhac_chill.mp3 vào cùng thư mục.');
+  }
+}
+function pauseAudio(){
+  audio.pause();
+  isPlaying = false;
+  playPauseBtn.textContent = '▶️';
+  statusEl.textContent = 'Tạm dừng';
+}
+
+// Controls events
+playPauseBtn.addEventListener('click', async () => {
+  if(!audio.src){
+    // load current track default
+    loadTrack(currentIndex, false);
+  }
+  if(!started){
+    // first user interaction; try to play
+    await playAudio();
+  } else {
+    if(audio.paused) await playAudio(); else pauseAudio();
+  }
+});
+
+prevBtn.addEventListener('click', () => {
+  currentIndex = (currentIndex - 1 + tracks.length) % tracks.length;
+  loadTrack(currentIndex, started);
+});
+
+nextBtn.addEventListener('click', () => {
+  currentIndex = (currentIndex + 1) % tracks.length;
+  loadTrack(currentIndex, started);
+});
+
+audio.addEventListener('ended', () => {
+  // next auto
+  currentIndex = (currentIndex + 1) % tracks.length;
+  loadTrack(currentIndex, started);
+});
+
+// Progress & time
+audio.addEventListener('loadedmetadata', () => {
+  durationEl.textContent = formatTime(audio.duration || 0);
+  progress.value = 0;
+});
+audio.addEventListener('timeupdate', () => {
+  if(audio.duration){
+    const pct = (audio.currentTime / audio.duration) * 100;
+    progress.value = pct;
+    currentTimeEl.textContent = formatTime(audio.currentTime);
+  }
+});
+progress.addEventListener('input', (e)=>{
+  if(audio.duration){
+    const pct = parseFloat(e.target.value);
+    audio.currentTime = (pct/100) * audio.duration;
+  }
+});
+
+// Volume
+volumeEl.addEventListener('input', (e)=>{ audio.volume = parseFloat(e.target.value); });
+audio.volume = parseFloat(volumeEl.value);
+
+// Format time
+function formatTime(sec){
+  if(!sec || isNaN(sec)) return '0:00';
+  const m = Math.floor(sec/60);
+  const s = Math.floor(sec%60);
+  return m+':' + (s<10? '0'+s : s);
+}
+
+// Visualizer draw
+function drawVisualizer(){
+  if(!analyser) { requestAnimationFrame(drawVisualizer); return; }
+  analyser.getByteFrequencyData(dataArray);
+  const ctx = visCanvas.getContext('2d');
+  const w = visCanvas.width, h = visCanvas.height;
+  ctx.clearRect(0,0,w,h);
+  const barWidth = (w / dataArray.length) * 1.4;
+  let x = 0;
+  for(let i=0;i<dataArray.length;i++){
+    const v = dataArray[i] / 255;
+    const barH = v * h * 0.9;
+    const gradient = ctx.createLinearGradient(0,0,0,h);
+    gradient.addColorStop(0, 'rgba(106,17,203,0.9)');
+    gradient.addColorStop(1, 'rgba(37,117,252,0.6)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(x, h - barH, barWidth, barH);
+    x += barWidth + 1;
+  }
+  requestAnimationFrame(drawVisualizer);
+}
+
+// File input handling (choose local MP3)
+openLocal.addEventListener('click', ()=> fileInput.click());
+fileInput.addEventListener('change', (ev) => {
+  const f = ev.target.files && ev.target.files[0];
+  if(!f) return;
+  const url = URL.createObjectURL(f);
+  // add to playlist as first next track
+  const newTrack = { title: f.name.replace(/\.[^/.]+$/,""), artist: 'Local file', src: url, cover: "" };
+  tracks.unshift(newTrack);
+  currentIndex = 0;
+  renderPlaylist();
+  loadTrack(currentIndex, true);
+  // mark started as true because this action is direct user interaction
+  started = true;
+  ensureAudioContext();
+  playAudio();
+});
+
+// Load default local file button
+loadDefault.addEventListener('click', () => {
+  // set first track src to defaultLocal and load
+  tracks[0].src = defaultLocal;
+  currentIndex = 0;
+  renderPlaylist();
+  loadTrack(currentIndex, true);
+  // try to play (user clicked)
+  started = true;
+  ensureAudioContext();
+  playAudio();
+});
+
+// Initially populate playlist UI with default tracks (all pointing to defaultLocal)
+function init(){
+  renderPlaylist();
+  titleEl.textContent = 'Chưa có bài';
+  artistEl.textContent = '—';
+  // prepare canvas scaling
+  visCanvas.width = visCanvas.clientWidth * devicePixelRatio;
+  visCanvas.height = visCanvas.clientHeight * devicePixelRatio;
+}
+init();
+
+/* Accessibility: space toggles play/pause when focused outside inputs */
+window.addEventListener('keydown', (e)=>{
+  if(e.code==='Space' && document.activeElement.tagName !== 'INPUT'){
+    e.preventDefault();
+    playPauseBtn.click();
+  }
+});
+</script>
+</body>
+</html>
