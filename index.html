@@ -6,355 +6,351 @@
 <title>Chill Galaxy — Pro Player</title>
 <link rel="icon" href="data:," />
 <style>
-  :root{
-    --bg:#07060a;
-    --accent:#6a11cb;
-    --accent2:#2575fc;
-    --glass: rgba(255,255,255,0.06);
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;padding:0;
-    background:var(--bg);
-    color:#fff;
-    font-family:Inter, "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
-    -webkit-font-smoothing:antialiased;
-    display:flex;flex-direction:column;align-items:center;
-  }
+:root{
+  --bg:#07060a;
+  --accent:#6a11cb;
+  --accent2:#2575fc;
+}
 
-  /* Background */
-  .stars{position:fixed;inset:0;background:url('https://www.transparenttextures.com/patterns/stardust.png') repeat;z-index:-3;animation:moveStars 220s linear infinite;opacity:.9}
-  @keyframes moveStars{from{background-position:0 0}to{background-position:-9000px 4000px}}
-  .nebula{position:fixed;inset:0;z-index:-2;filter:blur(90px);
-    background:
-      radial-gradient(circle at 20% 30%, rgba(106,17,203,0.35), transparent 55%),
-      radial-gradient(circle at 80% 70%, rgba(37,117,252,0.28), transparent 55%),
-      radial-gradient(circle at 50% 50%, rgba(255,80,120,0.12), transparent 60%);
-    animation:neb 40s ease-in-out infinite alternate;opacity:.95}
-  @keyframes neb{from{transform:scale(1)}to{transform:scale(1.12) translate(-20px,20px)}}
+/* RESET & BODY */
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;padding:0;
+  background:var(--bg);
+  color:#fff;
+  font-family:Inter, "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
+  -webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;align-items:center;
+}
 
-  header{width:100%;max-width:1100px;padding:36px 20px 6px;display:flex;align-items:center;gap:20px;z-index:5}
-  .logo{display:flex;flex-direction:column}
-  .logo h1{font-size:1.6rem;margin:0;letter-spacing:0.6px;text-shadow:0 0 14px rgba(106,17,203,0.9),0 0 30px rgba(37,117,252,0.5)}
-  .logo p{margin:6px 0 0;color:#cfcfcf;font-size:.95rem}
+/* BACKGROUND */
+.stars{position:fixed;inset:0;background:url('https://www.transparenttextures.com/patterns/stardust.png') repeat;z-index:-3;animation:moveStars 220s linear infinite;opacity:.9}
+@keyframes moveStars{from{background-position:0 0}to{background-position:-9000px 4000px}}
+.nebula{position:fixed;inset:0;z-index:-2;filter:blur(90px);
+  background:
+    radial-gradient(circle at 20% 30%, rgba(106,17,203,0.35), transparent 55%),
+    radial-gradient(circle at 80% 70%, rgba(37,117,252,0.28), transparent 55%),
+    radial-gradient(circle at 50% 50%, rgba(255,80,120,0.12), transparent 60%);
+  animation:neb 40s ease-in-out infinite alternate;opacity:.95}
+@keyframes neb{from{transform:scale(1)}to{transform:scale(1.12) translate(-20px,20px)}}
 
-  main{width:100%;max-width:1100px;padding:18px;display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start;}
+/* HEADER */
+header{width:100%;max-width:1100px;padding:36px 20px 6px;display:flex;align-items:center;gap:20px;z-index:5}
+.logo{display:flex;flex-direction:column}
+.logo h1{font-size:1.6rem;margin:0;letter-spacing:0.6px;text-shadow:0 0 14px rgba(106,17,203,0.9),0 0 30px rgba(37,117,252,0.5)}
+.logo p{margin:6px 0 0;color:#cfcfcf;font-size:.95rem}
 
-  /* left: playlist */
-  .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:14px;backdrop-filter: blur(8px);box-shadow:0 6px 30px rgba(0,0,0,0.6)}
-  .playlist-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-  .cover{width:72px;height:72px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700}
-  .meta{flex:1}
-  .meta h3{margin:0;font-size:1.05rem}
-  .meta p{margin:4px 0 0;color:#ccc;font-size:.88rem}
+/* MAIN */
+main{width:100%;max-width:1100px;padding:18px;display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start;}
 
-  .file-row{display:flex;gap:8px;align-items:center;margin-top:10px}
-  .btn{padding:8px 12px;border-radius:999px;border:none;background:var(--accent);color:white;cursor:pointer;font-weight:600;box-shadow:0 8px 26px rgba(106,17,203,0.18)}
-  .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06)}
-  .file-input{display:none}
+/* PLAYLIST PANEL */
+.panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:14px;backdrop-filter: blur(8px);box-shadow:0 6px 30px rgba(0,0,0,0.6)}
+.playlist-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.cover{width:72px;height:72px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700}
+.meta{flex:1}
+.meta h3{margin:0;font-size:1.05rem}
+.meta p{margin:4px 0 0;color:#ccc;font-size:.88rem}
 
-  .playlist{margin-top:12px;max-height:56vh;overflow:auto;padding-right:6px}
-  .track{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;margin-bottom:8px;cursor:pointer;background:transparent;transition:all .18s}
-  .track:hover{transform:translateY(-4px);background:rgba(255,255,255,0.02)}
-  .track.active{background:linear-gradient(90deg, rgba(106,17,203,0.16), rgba(37,117,252,0.08));box-shadow:0 8px 24px rgba(37,117,252,0.06)}
-  .track .t-index{width:34px;text-align:center;color:#d8d8d8}
-  .track .t-info{flex:1}
-  .track .t-info .t-title{font-weight:600}
-  .track .t-info .t-sub{font-size:.85rem;color:#cfcfcf;opacity:.85;margin-top:4px}
+/* FILE SELECT BUTTON */
+.file-row{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin-top:10px;
+}
+.file-input{
+  display:none;
+}
+label.btn.secondary{
+  cursor:pointer;
+  user-select:none;
+  position: relative;
+  display: inline-block;
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  font-weight: 600;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(37,117,252,0.3);
+  backdrop-filter: blur(6px);
+  z-index:1;
+}
+label.btn.secondary::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  opacity: 0.4;
+  filter: blur(12px);
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: -1;
+}
+label.btn.secondary:hover::before{
+  opacity: 0.8;
+  transform: scale(1.15);
+}
+label.btn.secondary:hover{
+  box-shadow: 0 12px 32px rgba(37,117,252,0.6);
+  transform: scale(1.05);
+}
 
-  /* right: player big */
-  .player-wrap{display:flex;flex-direction:column;gap:14px}
-  .player-card{display:flex;gap:16px;align-items:center;padding:18px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 10px 40px rgba(0,0,0,0.6)}
-  .player-cover{width:140px;height:140px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700}
-  .player-meta{flex:1}
-  .player-meta h2{margin:0;font-size:1.25rem}
-  .player-meta p{margin:6px 0 0;color:#d0d0d0}
+/* TRACK LIST */
+.playlist{margin-top:12px;max-height:56vh;overflow:auto;padding-right:6px}
+.track{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;margin-bottom:8px;cursor:pointer;background:transparent;position:relative;transition:all .25s}
+.track .t-index{width:34px;text-align:center;color:#d8d8d8}
+.track .t-info{flex:1;position:relative;z-index:2}
+.track .t-info .t-title{font-weight:600}
+.track .t-info .t-sub{font-size:.85rem;color:#cfcfcf;opacity:.85;margin-top:4px}
 
-  /* controls */
-  .controls{display:flex;flex-direction:column;gap:12px;align-items:center}
-  .big-controls{display:flex;gap:18px;align-items:center}
-  .icon-btn{width:56px;height:56px;border-radius:999px;border:none;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center;font-size:1.25rem;cursor:pointer;box-shadow:0 8px 30px rgba(0,0,0,0.5)}
-  .icon-btn.play{width:72px;height:72px;font-size:1.35rem;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+/* NEON HOVER EFFECT */
+.track::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:10px;
+  background:linear-gradient(90deg, rgba(106,17,203,0.6), rgba(37,117,252,0.6));
+  opacity:0;
+  filter: blur(14px);
+  z-index:1;
+  transition: opacity .35s, transform .35s;
+}
+.track:hover::before{opacity:1;transform: scale(1.06);}
+.track.active::before{
+  opacity:1;
+  transform:scale(1.1);
+  animation: neonPulse 2s infinite alternate;
+}
+@keyframes neonPulse{
+  0%{filter: blur(14px);}
+  50%{filter: blur(20px);}
+  100%{filter: blur(14px);}
+}
 
-  /* progress */
-  .progress-row{width:100%;display:flex;align-items:center;gap:10px}
-  .time{font-size:.85rem;color:#cfcfcf;width:48px;text-align:center}
-  input[type="range"].progress{flex:1;appearance:none;height:8px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:8px}
-  input[type="range"].progress::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.4)}
+/* PLAYER CARD */
+.player-wrap{display:flex;flex-direction:column;gap:14px}
+.player-card{display:flex;gap:16px;align-items:center;padding:18px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 10px 40px rgba(0,0,0,0.6)}
+.player-cover{width:140px;height:140px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700}
+.player-meta{flex:1}
+.player-meta h2{margin:0;font-size:1.25rem}
+.player-meta p{margin:6px 0 0;color:#d0d0d0}
 
-  .row-bottom{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-top:8px}
-  .volume{display:flex;align-items:center;gap:8px}
+/* CONTROLS */
+.controls{display:flex;flex-direction:column;gap:12px;align-items:center}
+.big-controls{display:flex;gap:24px;align-items:center}
 
-  /* visualizer */
-  canvas.visual{width:100%;height:70px;border-radius:10px;display:block;background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));}
+/* ICON BUTTONS */
+.icon-btn{
+  width:60px;height:60px;border-radius:50%;border:none;background:rgba(255,255,255,0.05);
+  color:#fff;font-size:1.4rem;cursor:pointer;transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.3s ease;
+  box-shadow: 0 6px 20px rgba(37,117,252,0.4);backdrop-filter: blur(6px);position:relative;overflow:hidden;
+}
+.icon-btn::before{
+  content:"";
+  position:absolute;inset:0;border-radius:50%;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);opacity:0.5;
+  filter: blur(12px);transition: opacity 0.3s, transform 0.3s; z-index:-1;
+}
+.icon-btn:hover::before{opacity:1;transform: scale(1.25);}
+.icon-btn:hover{transform: scale(1.15);box-shadow: 0 12px 40px rgba(37,117,252,0.8);}
+.icon-btn.play{
+  width:88px;height:88px;font-size:1.7rem;
+  background:linear-gradient(145deg, rgba(106,17,203,0.85), rgba(37,117,252,0.75));
+  box-shadow: 0 12px 42px rgba(37,117,252,0.9);
+  animation: pulse 1.8s infinite alternate;
+}
+@keyframes pulse{
+  0%{transform: scale(1); box-shadow:0 12px 42px rgba(37,117,252,0.6);}
+  50%{transform: scale(1.12); box-shadow:0 18px 50px rgba(37,117,252,0.9);}
+  100%{transform: scale(1); box-shadow:0 12px 42px rgba(37,117,252,0.6);}
+}
 
-  footer{width:100%;max-width:1100px;padding:18px;color:#bbb;font-size:.9rem;text-align:center;opacity:.95}
+/* PROGRESS */
+.progress-row{width:100%;display:flex;align-items:center;gap:10px}
+.time{font-size:.85rem;color:#cfcfcf;width:48px;text-align:center}
+input[type="range"].progress{flex:1;appearance:none;height:8px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:8px}
+input[type="range"].progress::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.4)}
 
-  /* responsive */
-  @media (max-width:980px){
-    main{grid-template-columns:1fr; padding:12px}
-    .player-cover{width:112px;height:112px}
-  }
+.row-bottom{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-top:8px}
+.volume{display:flex;align-items:center;gap:8px}
+
+/* VISUALIZER */
+canvas.visual{width:100%;height:70px;border-radius:10px;display:block;background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));}
+
+/* FOOTER */
+footer{width:100%;max-width:1100px;padding:18px;color:#bbb;font-size:.9rem;text-align:center;opacity:.95}
+
+/* RESPONSIVE */
+@media (max-width:980px){
+  main{grid-template-columns:1fr; padding:12px}
+  .player-cover{width:112px;height:112px}
+}
 </style>
 </head>
 <body>
-  <div class="stars" aria-hidden="true"></div>
-  <div class="nebula" aria-hidden="true"></div>
+<div class="stars" aria-hidden="true"></div>
+<div class="nebula" aria-hidden="true"></div>
 
-  <header>
-    <div class="logo">
-      <h1>Galaxy Music</h1>
-      <p>Web phát nhạc chuyên nghiệp — Bấm Play để bắt đầu</p>
-    </div>
-  </header>
+<header>
+  <div class="logo">
+    <h1>Galaxy Music</h1>
+    <p>Web phát nhạc chuyên nghiệp — Bấm Play để bắt đầu</p>
+  </div>
+</header>
 
-  <main>
-    <!-- LEFT: Playlist -->
-    <div class="panel">
-      <div class="playlist-header">
-        <div class="cover" id="sideCover">CG</div>
-        <div class="meta">
-          <h3>Playlist Chill</h3>
-          <p>Nhấn vào bài để phát, hoặc chọn file MP3 từ máy (đề phòng CORS).</p>
-        </div>
+<main>
+  <div class="panel">
+    <div class="playlist-header">
+      <div class="cover" id="sideCover">CG</div>
+      <div class="meta">
+        <h3>Playlist Chill</h3>
+        <p>Nhấn vào bài để phát, hoặc chọn file MP3 từ máy.</p>
       </div>
-
-      <div class="file-row">
-        <label class="btn secondary" id="openLocal">Chọn MP3 Từ Máy Tính</label>
-        <input id="fileInput" class="file-input" type="file" accept="audio/*" />
-      </div>
-
-      <div class="playlist" id="playlist"></div>
     </div>
 
-    <!-- RIGHT: Player -->
-    <div class="player-wrap">
-      <div class="player-card">
-        <div class="player-cover" id="mainCover">CG</div>
-        <div class="player-meta">
-          <h2 id="title">Chưa có bài</h2>
-          <p id="artist">—</p>
+    <div class="file-row">
+      <input type="file" id="fileInput" class="file-input" accept="audio/*" multiple>
+      <label for="fileInput" class="btn secondary">Chọn MP3 Từ Máy Tính</label>
+    </div>
 
-          <div class="controls">
-      <div class="big-controls">
-        <button id="prev" class="icon-btn circle prev">⏮</button>
-        <button id="playPause" class="icon-btn circle play">▶</button>
-        <button id="next" class="icon-btn circle next">⏭</button>
-      </div>
+    <div class="playlist" id="playlist"></div>
+  </div>
 
-            <div class="progress-row" aria-hidden="false">
-              <div class="time" id="currentTime">0:00</div>
-              <input type="range" class="progress" id="progress" min="0" max="100" value="0" />
-              <div class="time" id="duration">0:00</div>
-            </div>
+  <div class="player-wrap">
+    <div class="player-card">
+      <div class="player-cover" id="mainCover">CG</div>
+      <div class="player-meta">
+        <h2 id="title">Chưa có bài</h2>
+        <p id="artist">—</p>
 
-            <canvas id="vis" class="visual" aria-hidden="true"></canvas>
-
-            <div class="row-bottom">
-              <div class="volume">
-                <label style="font-size:.95rem;color:#ddd">Volume</label>
-                <input id="volume" type="range" min="0" max="1" step="0.01" value="0.55" />
-              </div>
-              <div style="color:#cfcfcf;font-size:.95rem" id="status">Sẵn sàng</div>
-            </div>
-
+        <div class="controls">
+          <div class="big-controls">
+            <button class="icon-btn prev">⏮</button>
+            <button class="icon-btn play">▶</button>
+            <button class="icon-btn next">⏭</button>
           </div>
+
+          <div class="progress-row">
+            <div class="time" id="currentTime">0:00</div>
+            <input type="range" class="progress" id="progress" min="0" max="100" value="0" />
+            <div class="time" id="duration">0:00</div>
+          </div>
+
+          <canvas id="vis" class="visual"></canvas>
+
+          <div class="row-bottom">
+            <div class="volume">
+              <label style="font-size:.95rem;color:#ddd">Volume</label>
+              <input id="volume" type="range" min="0" max="1" step="0.01" value="0.55" />
+            </div>
+            <div style="color:#cfcfcf;font-size:.95rem" id="status">Sẵn sàng</div>
+          </div>
+
         </div>
       </div>
-
     </div>
-  </main>
+  </div>
+</main>
 
-  <footer>Made with ❤️ by Nguyễn Hoàng Sang.
-  </footer>
+<footer>Made with ❤️ by Nguyễn Hoàng Sang.</footer>
 
 <script>
-// Playlist rỗng
-const tracks = [];
-
-// UI elements
+const fileInput = document.getElementById('fileInput');
 const playlistEl = document.getElementById('playlist');
-const playPauseBtn = document.getElementById('playPause');
-const prevBtn = document.getElementById('prev');
-const nextBtn = document.getElementById('next');
-const titleEl = document.getElementById('title');
-const artistEl = document.getElementById('artist');
+const title = document.getElementById('title');
 const mainCover = document.getElementById('mainCover');
-const sideCover = document.getElementById('sideCover');
-const progress = document.getElementById('progress');
 const currentTimeEl = document.getElementById('currentTime');
 const durationEl = document.getElementById('duration');
-const volumeEl = document.getElementById('volume');
-const statusEl = document.getElementById('status');
-const visCanvas = document.getElementById('vis');
+const progress = document.getElementById('progress');
+const playBtn = document.querySelector('.icon-btn.play');
+const volumeSlider = document.getElementById('volume');
 
-const fileInput = document.getElementById('fileInput');
-const openLocal = document.getElementById('openLocal');
-
-let currentIndex = 0;
-let started = false;
+let audio = new Audio();
 let isPlaying = false;
+let tracks = [];
+let currentIndex = -1;
 
-const audio = new Audio();
-audio.crossOrigin = "anonymous";
-audio.loop = false;
+// Chọn nhiều file MP3
+fileInput.addEventListener('change', (e) => {
+  const files = Array.from(e.target.files).filter(f => f.type.includes('audio'));
+  if (files.length === 0) return;
 
-// WebAudio setup
-let audioCtx, analyser, sourceNode, dataArray;
-function ensureAudioContext(){
-  if(!audioCtx){
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 256;
-    const bufferLength = analyser.frequencyBinCount;
-    dataArray = new Uint8Array(bufferLength);
-    sourceNode = audioCtx.createMediaElementSource(audio);
-    sourceNode.connect(analyser);
-    analyser.connect(audioCtx.destination);
-    visCanvas.width = visCanvas.clientWidth * devicePixelRatio;
-    visCanvas.height = visCanvas.clientHeight * devicePixelRatio;
-    requestAnimationFrame(drawVisualizer);
-  }
-}
+  tracks = files.map((file, index) => ({
+    name: file.name,
+    url: URL.createObjectURL(file),
+    index
+  }));
 
-function renderPlaylist(){
-  playlistEl.innerHTML = "";
-  tracks.forEach((t, i) => {
+  // Hiển thị playlist
+  playlistEl.innerHTML = '';
+  tracks.forEach(track => {
     const div = document.createElement('div');
-    div.className = 'track' + (i===currentIndex ? ' active' : '');
-    div.innerHTML = `<div class="t-index">${i+1}</div>
-                     <div class="t-info"><div class="t-title">${t.title}</div><div class="t-sub">${t.artist}</div></div>`;
-    div.addEventListener('click', () => {
-      currentIndex = i;
-      loadTrack(currentIndex, true);
-    });
+    div.className = 'track';
+    div.innerHTML = `<div class="t-index">${track.index+1}</div>
+                     <div class="t-info"><div class="t-title">${track.name}</div></div>`;
+    div.addEventListener('click', () => playTrack(track.index));
     playlistEl.appendChild(div);
   });
-}
 
-function loadTrack(i, autoPlay=false){
-  const t = tracks[i];
-  audio.src = t.src;
-  titleEl.textContent = t.title;
-  artistEl.textContent = t.artist || '—';
-  mainCover.textContent = t.title.split(' ').slice(0,2).map(s=>s[0]).join('').toUpperCase();
-  sideCover.textContent = mainCover.textContent;
-  updateActive();
-  statusEl.textContent = t.title ? 'Đã chọn: ' + t.title : 'Sẵn sàng';
-  if(started && autoPlay) playAudio();
-}
+  playTrack(0);
+});
 
-function updateActive(){
-  document.querySelectorAll('.track').forEach((el, idx) => {
-    el.classList.toggle('active', idx === currentIndex);
+// Phát bài theo index
+function playTrack(index) {
+  if (index < 0 || index >= tracks.length) return;
+  currentIndex = index;
+  const track = tracks[index];
+  audio.src = track.url;
+  audio.load();
+  audio.play();
+  isPlaying = true;
+  playBtn.textContent = "⏸";
+  title.textContent = track.name;
+  mainCover.textContent = "🎵";
+
+  // đánh dấu bài active
+  document.querySelectorAll('.track').forEach((t, i) => {
+    t.classList.toggle('active', i === index);
   });
 }
 
-async function playAudio(){
-  if(audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
-  await audio.play();
-  started = true;
-  isPlaying = true;
-  playPauseBtn.textContent = '⏸️';
-  statusEl.textContent = tracks[currentIndex]?.title ? 'Đang phát: ' + tracks[currentIndex].title : 'Đang phát';
-  ensureAudioContext();
-}
-
-function pauseAudio(){
-  audio.pause();
-  isPlaying = false;
-  playPauseBtn.textContent = '▶️';
-  statusEl.textContent = 'Tạm dừng';
-}
-
-playPauseBtn.addEventListener('click', async () => {
-  if(!audio.src) return;
-  if(audio.paused) await playAudio(); else pauseAudio();
+// Play/Pause
+playBtn.addEventListener('click', () => {
+  if (!audio.src) return;
+  if (isPlaying) {
+    audio.pause();
+    playBtn.textContent = "▶";
+  } else {
+    audio.play();
+    playBtn.textContent = "⏸";
+  }
+  isPlaying = !isPlaying;
 });
 
-prevBtn.addEventListener('click', () => {
-  if(tracks.length===0) return;
-  currentIndex = (currentIndex - 1 + tracks.length) % tracks.length;
-  loadTrack(currentIndex, started);
-});
-
-nextBtn.addEventListener('click', () => {
-  if(tracks.length===0) return;
-  currentIndex = (currentIndex + 1) % tracks.length;
-  loadTrack(currentIndex, started);
-});
-
-audio.addEventListener('ended', () => {
-  if(tracks.length===0) return;
-  currentIndex = (currentIndex + 1) % tracks.length;
-  loadTrack(currentIndex, started);
-});
-
-audio.addEventListener('loadedmetadata', () => {
-  durationEl.textContent = formatTime(audio.duration || 0);
-  progress.value = 0;
-});
-
+// Cập nhật progress
 audio.addEventListener('timeupdate', () => {
-  if(audio.duration){
-    const pct = (audio.currentTime / audio.duration) * 100;
-    progress.value = pct;
-    currentTimeEl.textContent = formatTime(audio.currentTime);
-  }
+  const cur = Math.floor(audio.currentTime);
+  const dur = Math.floor(audio.duration) || 0;
+  const formatTime = s => `${Math.floor(s/60)}:${('0'+(s%60)).slice(-2)}`;
+  currentTimeEl.textContent = formatTime(cur);
+  durationEl.textContent = formatTime(dur);
+  if(dur) progress.value = (cur / dur) * 100;
 });
 
-progress.addEventListener('input', (e)=>{
-  if(audio.duration){
-    audio.currentTime = (parseFloat(e.target.value)/100)*audio.duration;
-  }
+// Tua nhạc
+progress.addEventListener('input', e => {
+  const dur = audio.duration || 0;
+  audio.currentTime = (e.target.value / 100) * dur;
 });
 
-volumeEl.addEventListener('input', (e)=>{ audio.volume = parseFloat(e.target.value); });
-audio.volume = parseFloat(volumeEl.value);
-
-function formatTime(sec){
-  if(!sec || isNaN(sec)) return '0:00';
-  const m = Math.floor(sec/60);
-  const s = Math.floor(sec%60);
-  return m+':' + (s<10? '0'+s : s);
-}
-
-function drawVisualizer(){
-  if(!analyser) { requestAnimationFrame(drawVisualizer); return; }
-  analyser.getByteFrequencyData(dataArray);
-  const ctx = visCanvas.getContext('2d');
-  const w = visCanvas.width, h = visCanvas.height;
-  ctx.clearRect(0,0,w,h);
-  const barWidth = (w / dataArray.length) * 1.4;
-  let x = 0;
-  for(let i=0;i<dataArray.length;i++){
-    const v = dataArray[i] / 255;
-    const barH = v * h * 0.9;
-    const gradient = ctx.createLinearGradient(0,0,0,h);
-    gradient.addColorStop(0, 'rgba(106,17,203,0.9)');
-    gradient.addColorStop(1, 'rgba(37,117,252,0.6)');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(x, h - barH, barWidth, barH);
-    x += barWidth + 1;
-  }
-  requestAnimationFrame(drawVisualizer);
-}
-
-openLocal.addEventListener('click', ()=> fileInput.click());
-fileInput.addEventListener('change', (ev) => {
-  const f = ev.target.files && ev.target.files[0];
-  if(!f) return;
-  const url = URL.createObjectURL(f);
-  const newTrack = { title: f.name.replace(/\.[^/.]+$/,""), artist:'Local', src: url };
-  tracks.push(newTrack);
-  currentIndex = tracks.length-1;
-  renderPlaylist();
-  loadTrack(currentIndex, true);
+// Điều chỉnh âm lượng
+volumeSlider.addEventListener('input', e => {
+  audio.volume = e.target.value;
 });
-
-// initial render
-renderPlaylist();
 </script>
 </body>
 </html>
