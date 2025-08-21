@@ -123,7 +123,6 @@
       <div class="file-row">
         <label class="btn secondary" id="openLocal">Chọn MP3 Từ Máy Tính</label>
         <input id="fileInput" class="file-input" type="file" accept="audio/*" />
-        <button id="loadDefault" class="btn">Dùng mặc định (nhac_chill.mp3)</button>
       </div>
 
       <div class="playlist" id="playlist"></div>
@@ -138,11 +137,11 @@
           <p id="artist">—</p>
 
           <div class="controls">
-            <div class="big-controls">
-              <button id="prev" class="icon-btn">⏮️</button>
-              <button id="playPause" class="icon-btn play">▶️</button>
-              <button id="next" class="icon-btn">⏭️</button>
-            </div>
+      <div class="big-controls">
+        <button id="prev" class="icon-btn circle prev">⏮</button>
+        <button id="playPause" class="icon-btn circle play">▶</button>
+        <button id="next" class="icon-btn circle next">⏭</button>
+      </div>
 
             <div class="progress-row" aria-hidden="false">
               <div class="time" id="currentTime">0:00</div>
@@ -168,23 +167,11 @@
   </main>
 
   <footer>Made with ❤️ by Nguyễn Hoàng Sang.
-</footer>
+  </footer>
 
 <script>
-/* ========= Playlist (mặc định) =========
-  NOTE: remote MP3 có thể gặp CORS trên 1 số host.
-  Vì vậy: bạn có 3 tùy chọn:
-   - Đặt file `nhac_chill.mp3` cùng thư mục với file .html và bấm "Dùng mặc định"
-   - Hoặc bấm "Chọn MP3 từ máy" để upload file local (đề xuất)
-   - Hoặc dùng remote links nhưng có thể lỗi CORS
-*/
-const defaultLocal = 'nhac_chill.mp3';
-const tracks = [
-  { title: "Calm Ocean", artist:"Instrumental", src: defaultLocal, cover: "" },
-  { title: "Ambient Chill", artist:"Instrumental", src: defaultLocal, cover: "" },
-  { title: "Evening Lofi", artist:"Lofi", src: defaultLocal, cover: "" },
-  // you can replace the src values with remote URLs (but beware of CORS)
-];
+// Playlist rỗng
+const tracks = [];
 
 // UI elements
 const playlistEl = document.getElementById('playlist');
@@ -204,13 +191,11 @@ const visCanvas = document.getElementById('vis');
 
 const fileInput = document.getElementById('fileInput');
 const openLocal = document.getElementById('openLocal');
-const loadDefault = document.getElementById('loadDefault');
 
 let currentIndex = 0;
 let started = false;
 let isPlaying = false;
 
-// Use Audio object + WebAudio for visualizer
 const audio = new Audio();
 audio.crossOrigin = "anonymous";
 audio.loop = false;
@@ -227,14 +212,12 @@ function ensureAudioContext(){
     sourceNode = audioCtx.createMediaElementSource(audio);
     sourceNode.connect(analyser);
     analyser.connect(audioCtx.destination);
-    // resize canvas
     visCanvas.width = visCanvas.clientWidth * devicePixelRatio;
     visCanvas.height = visCanvas.clientHeight * devicePixelRatio;
     requestAnimationFrame(drawVisualizer);
   }
 }
 
-// Render playlist UI
 function renderPlaylist(){
   playlistEl.innerHTML = "";
   tracks.forEach((t, i) => {
@@ -249,9 +232,7 @@ function renderPlaylist(){
     playlistEl.appendChild(div);
   });
 }
-renderPlaylist();
 
-// Load track (do not auto-play unless user already started)
 function loadTrack(i, autoPlay=false){
   const t = tracks[i];
   audio.src = t.src;
@@ -260,33 +241,26 @@ function loadTrack(i, autoPlay=false){
   mainCover.textContent = t.title.split(' ').slice(0,2).map(s=>s[0]).join('').toUpperCase();
   sideCover.textContent = mainCover.textContent;
   updateActive();
-  statusEl.textContent = 'Đã chọn: ' + t.title;
+  statusEl.textContent = t.title ? 'Đã chọn: ' + t.title : 'Sẵn sàng';
   if(started && autoPlay) playAudio();
 }
 
-// Update active in playlist
 function updateActive(){
   document.querySelectorAll('.track').forEach((el, idx) => {
     el.classList.toggle('active', idx === currentIndex);
   });
 }
 
-// Play / Pause logic
 async function playAudio(){
-  try{
-    if(audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
-    await audio.play();
-    started = true;
-    isPlaying = true;
-    playPauseBtn.textContent = '⏸️';
-    statusEl.textContent = 'Đang phát: ' + tracks[currentIndex].title;
-    ensureAudioContext();
-  }catch(err){
-    console.error('Play failed', err);
-    statusEl.textContent = 'Không phát được (chọn file local nếu cần)';
-    alert('Không phát được nhạc mặc định — vui lòng chọn file MP3 từ máy (bấm "Chọn MP3 từ máy") hoặc đặt file nhac_chill.mp3 vào cùng thư mục.');
-  }
+  if(audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+  await audio.play();
+  started = true;
+  isPlaying = true;
+  playPauseBtn.textContent = '⏸️';
+  statusEl.textContent = tracks[currentIndex]?.title ? 'Đang phát: ' + tracks[currentIndex].title : 'Đang phát';
+  ensureAudioContext();
 }
+
 function pauseAudio(){
   audio.pause();
   isPlaying = false;
@@ -294,41 +268,34 @@ function pauseAudio(){
   statusEl.textContent = 'Tạm dừng';
 }
 
-// Controls events
 playPauseBtn.addEventListener('click', async () => {
-  if(!audio.src){
-    // load current track default
-    loadTrack(currentIndex, false);
-  }
-  if(!started){
-    // first user interaction; try to play
-    await playAudio();
-  } else {
-    if(audio.paused) await playAudio(); else pauseAudio();
-  }
+  if(!audio.src) return;
+  if(audio.paused) await playAudio(); else pauseAudio();
 });
 
 prevBtn.addEventListener('click', () => {
+  if(tracks.length===0) return;
   currentIndex = (currentIndex - 1 + tracks.length) % tracks.length;
   loadTrack(currentIndex, started);
 });
 
 nextBtn.addEventListener('click', () => {
+  if(tracks.length===0) return;
   currentIndex = (currentIndex + 1) % tracks.length;
   loadTrack(currentIndex, started);
 });
 
 audio.addEventListener('ended', () => {
-  // next auto
+  if(tracks.length===0) return;
   currentIndex = (currentIndex + 1) % tracks.length;
   loadTrack(currentIndex, started);
 });
 
-// Progress & time
 audio.addEventListener('loadedmetadata', () => {
   durationEl.textContent = formatTime(audio.duration || 0);
   progress.value = 0;
 });
+
 audio.addEventListener('timeupdate', () => {
   if(audio.duration){
     const pct = (audio.currentTime / audio.duration) * 100;
@@ -336,18 +303,16 @@ audio.addEventListener('timeupdate', () => {
     currentTimeEl.textContent = formatTime(audio.currentTime);
   }
 });
+
 progress.addEventListener('input', (e)=>{
   if(audio.duration){
-    const pct = parseFloat(e.target.value);
-    audio.currentTime = (pct/100) * audio.duration;
+    audio.currentTime = (parseFloat(e.target.value)/100)*audio.duration;
   }
 });
 
-// Volume
 volumeEl.addEventListener('input', (e)=>{ audio.volume = parseFloat(e.target.value); });
 audio.volume = parseFloat(volumeEl.value);
 
-// Format time
 function formatTime(sec){
   if(!sec || isNaN(sec)) return '0:00';
   const m = Math.floor(sec/60);
@@ -355,7 +320,6 @@ function formatTime(sec){
   return m+':' + (s<10? '0'+s : s);
 }
 
-// Visualizer draw
 function drawVisualizer(){
   if(!analyser) { requestAnimationFrame(drawVisualizer); return; }
   analyser.getByteFrequencyData(dataArray);
@@ -377,55 +341,20 @@ function drawVisualizer(){
   requestAnimationFrame(drawVisualizer);
 }
 
-// File input handling (choose local MP3)
 openLocal.addEventListener('click', ()=> fileInput.click());
 fileInput.addEventListener('change', (ev) => {
   const f = ev.target.files && ev.target.files[0];
   if(!f) return;
   const url = URL.createObjectURL(f);
-  // add to playlist as first next track
-  const newTrack = { title: f.name.replace(/\.[^/.]+$/,""), artist: 'Local file', src: url, cover: "" };
-  tracks.unshift(newTrack);
-  currentIndex = 0;
+  const newTrack = { title: f.name.replace(/\.[^/.]+$/,""), artist:'Local', src: url };
+  tracks.push(newTrack);
+  currentIndex = tracks.length-1;
   renderPlaylist();
   loadTrack(currentIndex, true);
-  // mark started as true because this action is direct user interaction
-  started = true;
-  ensureAudioContext();
-  playAudio();
 });
 
-// Load default local file button
-loadDefault.addEventListener('click', () => {
-  // set first track src to defaultLocal and load
-  tracks[0].src = defaultLocal;
-  currentIndex = 0;
-  renderPlaylist();
-  loadTrack(currentIndex, true);
-  // try to play (user clicked)
-  started = true;
-  ensureAudioContext();
-  playAudio();
-});
-
-// Initially populate playlist UI with default tracks (all pointing to defaultLocal)
-function init(){
-  renderPlaylist();
-  titleEl.textContent = 'Chưa có bài';
-  artistEl.textContent = '—';
-  // prepare canvas scaling
-  visCanvas.width = visCanvas.clientWidth * devicePixelRatio;
-  visCanvas.height = visCanvas.clientHeight * devicePixelRatio;
-}
-init();
-
-/* Accessibility: space toggles play/pause when focused outside inputs */
-window.addEventListener('keydown', (e)=>{
-  if(e.code==='Space' && document.activeElement.tagName !== 'INPUT'){
-    e.preventDefault();
-    playPauseBtn.click();
-  }
-});
+// initial render
+renderPlaylist();
 </script>
 </body>
 </html>
