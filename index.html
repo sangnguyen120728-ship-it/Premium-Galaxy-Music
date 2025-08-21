@@ -234,9 +234,7 @@ let source;
 // ---------------- Play/Pause ----------------
 playBtn.addEventListener('click', async () => {
   if(!audio.src) return;
-
   if(audioCtx.state === 'suspended') await audioCtx.resume();
-
   if(isPlaying){
     audio.pause();
     playBtn.textContent='▶';
@@ -258,7 +256,12 @@ fileInput.addEventListener('change', (e)=>{
   const files = Array.from(e.target.files).filter(f=>f.type.includes('audio'));
   if(!files.length) return;
 
-  tracks = files.map((file,index)=>({name:file.name,url:URL.createObjectURL(file),index}));
+  const newTracks = files.map((file,index)=>({
+    name:file.name,
+    url:URL.createObjectURL(file),
+    index: tracks.length + index
+  }));
+  tracks = tracks.concat(newTracks);
 
   playlistEl.innerHTML='';
   tracks.forEach(track=>{
@@ -268,7 +271,8 @@ fileInput.addEventListener('change', (e)=>{
     div.addEventListener('click',()=>playTrack(track.index));
     playlistEl.appendChild(div);
   });
-  playTrack(0);
+
+  if(currentIndex === -1) playTrack(0);
 });
 
 // ---------------- PLAY TRACK ----------------
@@ -288,50 +292,62 @@ function playTrack(index){
   document.querySelectorAll('.track').forEach((t,i)=>t.classList.toggle('active',i===index));
   
   // kết nối visualizer
-  if(source) source.disconnect();
-  source = audioCtx.createMediaElementSource(audio);
-  source.connect(analyser);
-  analyser.connect(audioCtx.destination);
-  analyser.fftSize=128;
+  if(!source){
+    source = audioCtx.createMediaElementSource(audio);
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+  }
 }
 
 // ---------------- PROGRESS ----------------
-audio.addEventListener('timeupdate',()=>{
+audio.addEventListener('timeupdate', ()=>{
   const cur=Math.floor(audio.currentTime);
   const dur=Math.floor(audio.duration)||0;
-  const format=s=>`${Math.floor(s/60)}:${('0'+(s%60)).slice(-2)}`;
-  currentTimeEl.textContent=format(cur); durationEl.textContent=format(dur);
+  const formatTime = s=>`${Math.floor(s/60)}:${('0'+(s%60)).slice(-2)}`;
+  currentTimeEl.textContent=formatTime(cur);
+  durationEl.textContent=formatTime(dur);
   if(dur) progress.value=(cur/dur)*100;
 });
-progress.addEventListener('input', e=>{audio.currentTime=(e.target.value/100)*(audio.duration||0);});
+
+// ---------------- TUA NHẠC ----------------
+progress.addEventListener('input', e=>{
+  const dur=audio.duration||0;
+  audio.currentTime=(e.target.value/100)*dur;
+});
 
 // ---------------- VOLUME ----------------
-volumeSlider.addEventListener('input', e=>audio.volume=e.target.value);
-
-// ---------------- AUTO NEXT ----------------
-audio.addEventListener('ended',()=>{
-  if(currentIndex+1<tracks.length) playTrack(currentIndex+1);
-  else {isPlaying=false; playBtn.textContent='▶'; status.textContent='Kết thúc playlist';}
+volumeSlider.addEventListener('input', e=>{
+  audio.volume=e.target.value;
 });
 
 // ---------------- VISUALIZER ----------------
 const canvas=document.getElementById('vis');
 const ctx=canvas.getContext('2d');
-function drawVisualizer(){
-  requestAnimationFrame(drawVisualizer);
-  const bufferLength=analyser.frequencyBinCount;
-  const dataArray=new Uint8Array(bufferLength);
-  analyser.getByteFrequencyData(dataArray);
+analyser.fftSize=256;
+const bufferLength=analyser.frequencyBinCount;
+const dataArray=new Uint8Array(bufferLength);
+
+function draw(){
+  requestAnimationFrame(draw);
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  const barWidth=canvas.width/bufferLength;
+  analyser.getByteFrequencyData(dataArray);
+
+  const barWidth = canvas.width / bufferLength;
   for(let i=0;i<bufferLength;i++){
-    const barHeight=dataArray[i]/2;
-    const x=i*barWidth;
-    ctx.fillStyle=`hsl(${i*5},100%,60%)`;
-    ctx.fillRect(x,canvas.height-barHeight,barWidth-1,barHeight);
+    const barHeight = dataArray[i];
+    const x = i*barWidth;
+    const y = canvas.height - barHeight*canvas.height/256;
+    const hue = i*3;
+    ctx.fillStyle=`hsl(${hue},100%,65%)`;
+    ctx.fillRect(x,y,barWidth,barHeight*canvas.height/256);
   }
 }
-drawVisualizer();
+draw();
+
+// Resize canvas
+window.addEventListener('resize',()=>{canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;});
+canvas.width=canvas.clientWidth;
+canvas.height=canvas.clientHeight;
 
 </script>
 </body>
